@@ -69,7 +69,10 @@ def create_tables_in_database():
 
 
 def get_steam_games() -> str:
-    return requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v0002/").json()
+    print("Get steam games...")
+    response = requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v0002/").json()
+    print("Get steam games successfully")
+    return response
 
 
 def pick_game_from_steam(app_id, app_name) -> tuple:
@@ -80,7 +83,7 @@ def pick_game_from_steam(app_id, app_name) -> tuple:
     try:
         game_html_page = requests.get(steam_game_link).text
     
-        html_parser = BeautifulSoup(game_html_page, 'lxml')
+        html_parser = BeautifulSoup(game_html_page, 'html')
 
         title = html_parser.title.get_text()
 
@@ -141,13 +144,15 @@ def scrap_games_from_steam():
     2 найти по каждой игре информацию
     3 сохранить в бд
     """
-    games = get_steam_games()
+    games = get_steam_games()["applist"]["apps"]
+
     for game in games:
         # pick the game
+        print(f"game = {game}")
         app_id = game["appid"]
         app_name = game["name"]
 
-        media_link, steam_game_link = pick_game_from_steam(app_id)
+        media_link, steam_game_link = pick_game_from_steam(app_id, app_name) or (None, None)
 
         # save to database
         if media_link is not None and steam_game_link is not None:

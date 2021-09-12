@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  game_scrapper:
+    image: game-picker/game-scrapper
+    container_name: game-scrapper
+    restart: always
