@@ -117,18 +117,22 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
             print(f"Such game {app_id}, {app_name} already exists")
             return None
         
+        print("OLOO ---------")
+
         game_id = cursor.execute(
             """
             INSERT INTO games(name, steam_app_id, steam_app_link) VALUES(%s, %s, %s)
             """,
-            (app_id, app_name, steam_game_link)
+            [app_name, app_id, steam_game_link]
         )
+
+        print("OLOO ---------")
 
         cursor.execute(
             """
             INSERT INTO media_links(link, game_id) VALUES(%s, %s)
             """,
-            (media_link, game_id)
+            [media_link, game_id]
         )
 
         db_connection.commit()
