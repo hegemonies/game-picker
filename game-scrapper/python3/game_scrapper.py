@@ -105,7 +105,7 @@ def pick_game_from_steam(app_id, app_name) -> tuple:
 
 
 def is_game_exists_in_database(app_id):
-    cursor.execute("SELECT id FROM games WHERE steam_app_id = %s", (app_id))
+    cursor.execute("SELECT id FROM games WHERE steam_app_id = %s", (app_id,))
     return cursor.rowcount != 0
 
 
@@ -116,8 +116,6 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
         if is_game_exists_in_database(app_id):
             print(f"Such game {app_id}, {app_name} already exists")
             return None
-        
-        print("OLOO ---------")
 
         game_id = cursor.execute(
             """
@@ -125,8 +123,6 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
             """,
             [app_name, app_id, steam_game_link]
         )
-
-        print("OLOO ---------")
 
         cursor.execute(
             """
