@@ -2,10 +2,11 @@ import requests
 import psycopg2
 from configparser import ConfigParser
 from bs4 import BeautifulSoup
+import logging
 
 
 def get_config(filename, section):
-    print("Get config...")
+    logging.info("Get config...")
     parser = ConfigParser()
     parser.read(filename)
 
@@ -17,30 +18,30 @@ def get_config(filename, section):
     else:
         raise Exception('Section {0} not found in the {1} file'.format(section, filename))
 
-    print(config)
+    logging.info(config)
 
-    print("Get config successfully")
+    logging.info("Get config successfully")
     return config
 
 
 def connect_to_database(config) -> tuple:
-    print("Connect to database...")
+    logging.info("Connect to database...")
     # connection = psycopg2.connect(database="game_picker", user="bravo", password="bravo", host="pi41", port=5432)
     connection = psycopg2.connect(**config)
 
-    print("Connect to database successfully")
+    logging.info("Connect to database successfully")
     return (connection, connection.cursor())
 
 
 def close_connection_to_database():
-    print("Close database connection...")
+    logging.info("Close database connection...")
     db_connection.close()
     cursor.close()
-    print("Close database connection successfully")
+    logging.info("Close database connection successfully")
 
 
 def create_tables_in_database():
-    print("Create tables in database...")
+    logging.info("Create tables in database...")
 
     create_table_commands = (
         """
@@ -65,18 +66,18 @@ def create_tables_in_database():
 
     db_connection.commit()
 
-    print("Create tables in database successfully")
+    logging.info("Create tables in database successfully")
 
 
 def get_steam_games() -> str:
-    print("Get steam games...")
+    logging.info("Get steam games...")
     response = requests.get("http://api.steampowered.com/ISteamApps/GetAppList/v0002/").json()
-    print("Get steam games successfully")
+    logging.info("Get steam games successfully")
     return response
 
 
 def pick_game_from_steam(app_id, app_name) -> tuple:
-    print(f"Pick game by app_id = {app_id}")
+    logging.info(f"Pick game by app_id = {app_id}")
 
     steam_game_link = f"https://store.steampowered.com/app/{app_id}/"
 
@@ -91,14 +92,14 @@ def pick_game_from_steam(app_id, app_name) -> tuple:
         if title[:-9] == app_name:
             media_link = html_parser.find("link", rel="image_src").get("href")
 
-            print(f"title = {title}")
-            print(f"media_link = {media_link}")
+            logging.info(f"title = {title}")
+            logging.info(f"media_link = {media_link}")
         else:
-            print(f"App with id = {app_id} not exists")
+            logging.warning(f"App with id = {app_id} not exists")
             return None
     
     except Exception as error:
-        print(f"Error pick game by app_id={app_id}: {error}")
+        logging.error(f"Error pick game by app_id={app_id}: {error}")
         return None
 
     return (media_link, steam_game_link)
@@ -110,11 +111,11 @@ def is_game_exists_in_database(app_id):
 
 
 def save_game_to_database(app_id, app_name, media_link, steam_game_link):
-    print(f"Save game {app_id}, {app_name} to database...")
+    logging.info(f"Save game {app_id}, {app_name} to database...")
 
     try:
         if is_game_exists_in_database(app_id):
-            print(f"Such game {app_id}, {app_name} already exists")
+            logging.warning(f"Such game {app_id}, {app_name} already exists")
             return None
 
         game_id = cursor.execute(
@@ -123,6 +124,8 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
             """,
             [app_name, app_id, steam_game_link]
         )
+
+        logger.info(f"game id = {game_id}")
 
         cursor.execute(
             """
@@ -133,9 +136,9 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
 
         db_connection.commit()
 
-        print(f"Save game {app_id}, {app_name} to database sucessfully")
+        logging.info(f"Save game {app_id}, {app_name} to database sucessfully")
     except (Exception, psycopg2.DatabaseError) as error:
-        print(f"Can not save game with {app_id}, {app_name} to database: {error}")
+        logging.error(f"Can not save game with {app_id}, {app_name} to database: {error}")
 
 
 def scrap_games_from_steam():
@@ -148,7 +151,7 @@ def scrap_games_from_steam():
 
     for game in games:
         # pick the game
-        print(f"game = {game}")
+        logging.info(f"game = {game}")
         app_id = game["appid"]
         app_name = game["name"]
 
@@ -160,7 +163,8 @@ def scrap_games_from_steam():
 
 
 if __name__ == '__main__':
-    print("Game scrapper start")
+    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.info("Game scrapper start")
 
     try:
         database_config = get_config(filename='database.ini', section='postgresql')
@@ -168,7 +172,7 @@ if __name__ == '__main__':
         create_tables_in_database()
         scrap_games_from_steam()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(f"Global error: {error}")
+        logging.error(f"Global error: {error}")
     finally:
         if db_connection is not None and cursor is not None:
             close_connection_to_database()
