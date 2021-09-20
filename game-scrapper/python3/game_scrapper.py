@@ -3,6 +3,7 @@ import psycopg2
 from configparser import ConfigParser
 from bs4 import BeautifulSoup
 import logging
+import asyncio
 
 
 def get_config(filename, section):
@@ -35,8 +36,8 @@ def connect_to_database(config) -> tuple:
 
 def close_connection_to_database():
     logging.info("Close database connection...")
-    db_connection.close()
     cursor.close()
+    db_connection.close()
     logging.info("Close database connection successfully")
 
 
@@ -125,7 +126,7 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
             [app_name, app_id, steam_game_link]
         )
 
-        logger.info(f"game id = {game_id}")
+        logging.info(f"game id = {game_id}")
 
         cursor.execute(
             """
@@ -141,7 +142,7 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
         logging.error(f"Can not save game with {app_id}, {app_name} to database: {error}")
 
 
-def scrap_games_from_steam():
+async def scrap_games_from_steam():
     """
     1 получить список игр
     2 найти по каждой игре информацию
@@ -150,27 +151,31 @@ def scrap_games_from_steam():
     games = get_steam_games()["applist"]["apps"]
 
     for game in games:
-        # pick the game
-        logging.info(f"game = {game}")
-        app_id = game["appid"]
-        app_name = game["name"]
+        asyncio.create_task(scrap_game_from_steam(game))
 
-        media_link, steam_game_link = pick_game_from_steam(app_id, app_name) or (None, None)
 
-        # save to database
-        if media_link is not None and steam_game_link is not None:
-            save_game_to_database(app_id, app_name, media_link, steam_game_link)
+async def scrap_game_from_steam(game):
+    # pick the game
+    logging.info(f"Pick game = {game}")
+    app_id = game["appid"]
+    app_name = game["name"]
+
+    media_link, steam_game_link = pick_game_from_steam(app_id, app_name) or (None, None)
+
+    # save to database
+    if media_link is not None and steam_game_link is not None:
+        save_game_to_database(app_id, app_name, media_link, steam_game_link)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
     logging.info("Game scrapper start")
 
     try:
         database_config = get_config(filename='database.ini', section='postgresql')
         db_connection, cursor = connect_to_database(config=database_config)
         create_tables_in_database()
-        scrap_games_from_steam()
+        asyncio.run(scrap_games_from_steam())
     except (Exception, psycopg2.DatabaseError) as error:
         logging.error(f"Global error: {error}")
     finally:
