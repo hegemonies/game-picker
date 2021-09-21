@@ -22,15 +22,17 @@ def get_config(filename, section):
     logging.info(config)
 
     logging.info("Get config successfully")
+
     return config
 
 
 def connect_to_database(config) -> tuple:
     logging.info("Connect to database...")
-    # connection = psycopg2.connect(database="game_picker", user="bravo", password="bravo", host="pi41", port=5432)
+
     connection = psycopg2.connect(**config)
 
     logging.info("Connect to database successfully")
+
     return (connection, connection.cursor())
 
 
@@ -77,7 +79,7 @@ def get_steam_games() -> str:
     return response
 
 
-def pick_game_from_steam(app_id, app_name) -> tuple:
+async def pick_game_from_steam(app_id, app_name) -> tuple:
     logging.info(f"Pick game by app_id = {app_id}")
 
     steam_game_link = f"https://store.steampowered.com/app/{app_id}/"
@@ -111,7 +113,7 @@ def is_game_exists_in_database(app_id):
     return cursor.rowcount != 0
 
 
-def save_game_to_database(app_id, app_name, media_link, steam_game_link):
+async def save_game_to_database(app_id, app_name, media_link, steam_game_link):
     logging.info(f"Save game {app_id}, {app_name} to database...")
 
     try:
@@ -119,20 +121,22 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
             logging.warning(f"Such game {app_id}, {app_name} already exists")
             return None
 
-        game_id = cursor.execute(
+        cursor.execute(
             """
             INSERT INTO games(name, steam_app_id, steam_app_link) VALUES(%s, %s, %s)
             """,
             [app_name, app_id, steam_game_link]
         )
 
-        logging.info(f"game id = {game_id}")
+        game_model = await find_game_by_name(name=app_name)
+
+        logging.info(f"game id = {game_model[0]}")
 
         cursor.execute(
             """
             INSERT INTO media_links(link, game_id) VALUES(%s, %s)
             """,
-            [media_link, game_id]
+            [media_link, game_model[0]]
         )
 
         db_connection.commit()
@@ -140,6 +144,17 @@ def save_game_to_database(app_id, app_name, media_link, steam_game_link):
         logging.info(f"Save game {app_id}, {app_name} to database sucessfully")
     except (Exception, psycopg2.DatabaseError) as error:
         logging.error(f"Can not save game with {app_id}, {app_name} to database: {error}")
+
+
+async def find_game_by_name(name: str):
+    cursor.execute(
+        """
+        SELECT * FROM games WHERE name = %s
+        """,
+        [name]
+    )
+    
+    return cursor.fetchone()
 
 
 async def scrap_games_from_steam():
@@ -160,11 +175,11 @@ async def scrap_game_from_steam(game):
     app_id = game["appid"]
     app_name = game["name"]
 
-    media_link, steam_game_link = pick_game_from_steam(app_id, app_name) or (None, None)
+    media_link, steam_game_link = await pick_game_from_steam(app_id, app_name) or (None, None)
 
     # save to database
     if media_link is not None and steam_game_link is not None:
-        save_game_to_database(app_id, app_name, media_link, steam_game_link)
+        await save_game_to_database(app_id, app_name, media_link, steam_game_link)
 
 
 if __name__ == '__main__':
