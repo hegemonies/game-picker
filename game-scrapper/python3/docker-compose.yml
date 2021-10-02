@@ -5,6 +5,8 @@ services:
     image: game-picker/game-scrapper
     container_name: game-scrapper
     restart: always
+    environment:
+      TZ: Asia/Novosibirsk
     networks: 
       - game_picker_network
 

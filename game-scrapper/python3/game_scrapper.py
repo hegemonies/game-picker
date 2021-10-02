@@ -61,6 +61,12 @@ def create_tables_in_database():
             link TEXT,
             game_id BIGINT references games(id)
         )
+        """,
+        """
+        ALTER TABLE games ADD COLUMN IF NOT EXISTS steam_price INT DEFAULT 0
+        """,
+        """
+        ALTER TABLE games ADD COLUMN IF NOT EXISTS parent_game_id BIGINT DEFAULT 0
         """
     )
 
@@ -79,14 +85,14 @@ def get_steam_games() -> str:
     return response
 
 
-async def pick_game_from_steam(app_id, app_name) -> tuple:
+async def pick_game_from_steam(app_id, app_name):
     logging.info(f"Pick game by app_id = {app_id}")
 
     steam_game_link = f"https://store.steampowered.com/app/{app_id}/"
 
     try:
         game_html_page = requests.get(steam_game_link).text
-    
+
         html_parser = BeautifulSoup(game_html_page, 'html')
 
         title = html_parser.title.get_text()
@@ -95,54 +101,121 @@ async def pick_game_from_steam(app_id, app_name) -> tuple:
         if title[:-9] == app_name:
             media_link = html_parser.find("link", rel="image_src").get("href")
 
+            sub_games = []
+
+            purchase_html_elements = html_parser.find_all("div", "game_area_purchase_game_wrapper")
+
+            for element in purchase_html_elements:
+                price = int(element.find("div", "game_purchase_price price").get("data-price-final")) / 100
+                logging.info(f"Price of subgame = {price}")
+
+                title = element.h1.text[4:]
+                logging.info(f"Title of subgame = {title}")
+
+                sub_games.append({'price': price, 'title': title})
+
             logging.info(f"title = {title}")
             logging.info(f"media_link = {media_link}")
         else:
             logging.warning(f"App with id = {app_id} not exists")
             return None
-    
+
     except Exception as error:
         logging.error(f"Error pick game by app_id={app_id}: {error}")
         return None
 
-    return (media_link, steam_game_link)
+    return media_link, steam_game_link, sub_games
 
 
-def is_game_exists_in_database(app_id):
+async def is_game_exists_in_database(app_id):
     cursor.execute("SELECT id FROM games WHERE steam_app_id = %s", (app_id,))
     return cursor.rowcount != 0
 
 
-async def save_game_to_database(app_id, app_name, media_link, steam_game_link):
-    logging.info(f"Save game {app_id}, {app_name} to database...")
+async def save_steam_game_to_database(app_id: int, app_name: str, steam_game_link: str, price: int) -> int:
+    game_exists = await is_game_exists_in_database(app_id)
 
-    try:
-        if is_game_exists_in_database(app_id):
-            logging.warning(f"Such game {app_id}, {app_name} already exists")
-            return None
-
+    if game_exists:
         cursor.execute(
             """
-            INSERT INTO games(name, steam_app_id, steam_app_link) VALUES(%s, %s, %s)
+            UPDATE games SET name = %s, steam_app_id = %s, steam_app_link = %s, steam_price = %s WHERE steam_app_id = %s
             """,
-            [app_name, app_id, steam_game_link]
+            [app_name, app_id, steam_game_link, price, app_id]
+        )
+    else:
+        cursor.execute(
+            """
+            INSERT INTO games(name, steam_app_id, steam_app_link, steam_price) VALUES(%s, %s, %s, %s)
+            """,
+            [app_name, app_id, steam_game_link, price]
         )
 
-        game_model = await find_game_by_name(name=app_name)
+    model = await find_game_by_name(name=app_name)
 
-        logging.info(f"game id = {game_model[0]}")
+    return model[0]
 
+
+async def is_media_link_exists(media_link: str) -> bool:
+    cursor.execute(
+        """
+        SELECT id FROM media_links WhERE link = %s
+        """,
+        [media_link]
+    )
+    return cursor.rowcount != 0
+
+
+async def save_media_link(media_link: str, game_db_model_id: int):
+    media_link_exists = await is_media_link_exists(media_link=media_link)
+
+    if not media_link_exists:
         cursor.execute(
             """
             INSERT INTO media_links(link, game_id) VALUES(%s, %s)
             """,
-            [media_link, game_model[0]]
+            [media_link, game_db_model_id]
         )
+
+
+async def save_game_to_database(app_id: int, app_name: str, media_link: str, steam_game_link: str, sub_games: list):
+    logging.info(f"Save game {app_id}, {app_name} to database...")
+
+    try:
+        logging.info(f'game name = {app_name}, subgames = {sub_games}')
+
+        exactly_price = 0
+
+        if len(sub_games) != 0:
+            # first_price = sub_games[0].price
+            for sub_game in sub_games:
+                if sub_game['title'] == app_name:
+                    exactly_price = sub_game['price']
+
+        game_db_model_id = await save_steam_game_to_database(
+            app_id=app_id,
+            app_name=app_name,
+            steam_game_link=steam_game_link,
+            price=exactly_price
+        )
+
+        for sub_game in sub_games:
+            if sub_game['title'] != app_name:
+                await save_steam_game_to_database(
+                    app_id=app_id,
+                    app_name=sub_game['title'],
+                    steam_game_link=steam_game_link,
+                    price=sub_game['price']
+                )
+
+        logging.info(f"game id = {game_db_model_id}")
+
+        await save_media_link(media_link, game_db_model_id)
 
         db_connection.commit()
 
         logging.info(f"Save game {app_id}, {app_name} to database sucessfully")
     except (Exception, psycopg2.DatabaseError) as error:
+        db_connection.rollback()
         logging.error(f"Can not save game with {app_id}, {app_name} to database: {error}")
 
 
@@ -153,7 +226,7 @@ async def find_game_by_name(name: str):
         """,
         [name]
     )
-    
+
     return cursor.fetchone()
 
 
@@ -163,7 +236,7 @@ async def scrap_games_from_steam():
     2 найти по каждой игре информацию
     3 сохранить в бд
     """
-    games = get_steam_games()["applist"]["apps"]
+    games = get_steam_games()['applist']['apps']
 
     for game in games:
         asyncio.create_task(scrap_game_from_steam(game))
@@ -175,15 +248,16 @@ async def scrap_game_from_steam(game):
     app_id = game["appid"]
     app_name = game["name"]
 
-    media_link, steam_game_link = await pick_game_from_steam(app_id, app_name) or (None, None)
+    media_link, steam_game_link, sub_games = await pick_game_from_steam(app_id, app_name) or (None, None, None)
 
     # save to database
-    if media_link is not None and steam_game_link is not None:
-        await save_game_to_database(app_id, app_name, media_link, steam_game_link)
+    if media_link is not None and steam_game_link is not None and sub_games is not None:
+        await save_game_to_database(app_id, app_name, media_link, steam_game_link, sub_games)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
+                        level=logging.INFO)
     logging.info("Game scrapper start")
 
     try:
