@@ -21,12 +21,23 @@ schemes:
 
 paths:
 
-  /games:
+  /games?page_number={page_number}&page_size={page_size}:
     get:
       tags:
         - "game"
       summary: "Список всех игр"
       description: "Возвращает список всех игр с минимальной информацией фиксированного размера"
+      parameters:
+        - in: query
+          name: page_number
+          schema:
+            type: integer
+          description: The number of page
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+          description: The numbers of page size
       responses:
         200:
           description: "Успешное выполнение запроса"
