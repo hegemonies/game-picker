@@ -1,0 +1,398 @@
+openapi: "3.0.0"
+
+info:
+  description: "Game Picker open api"
+  version: "1.0.0"
+  title: "Game Picker"
+
+tags:
+  - name: "game"
+    description: "Everything about Games"
+  - name: "user"
+    description: "Everything about User"
+
+paths:
+
+  /games?page_number={page_number}&page_size={page_size}:
+    get:
+      tags:
+        - "game"
+      summary: "Список всех игр"
+      description: "Возвращает список всех игр с минимальной информацией фиксированного размера"
+      parameters:
+        - in: query
+          name: page_number
+          schema:
+            type: integer
+          description: The number of page
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+          description: The numbers of page size
+      responses:
+        200:
+          description: "Успешное выполнение запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameShallow"
+        400:
+          description: "Пользовательская ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        500:
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+
+  /games/{game_id}:
+    get:
+      tags:
+        - "game"
+      summary: "Возвращает полную информацию об игре"
+      parameters:
+        - name: game_id
+          in: path
+          description: Game id
+          required: true
+          schema:
+            type: integer
+            format: string
+      responses:
+        200:
+          description: "Успешное выполнение запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        400:
+          description: "Пользовательская ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        500:
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+
+  /games:
+    post:
+      tags:
+        - "game"
+      summary: "Возвращает список игр по фильтру"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filter:
+                  $ref: "#/components/schemas/Filter"
+                sort:
+                  $ref: "#/components/schemas/Sort"
+                paginator:
+                  $ref: "#/components/schemas/Paginator"
+      responses:
+        200:
+          description: "Успешное выполнение запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameShallow"
+        400:
+          description: "Пользовательская ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        500:
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+
+  /users:
+    get:
+      tags:
+        - "user"
+      summary: "Возвращает список пользователей с краткой информацией"
+      responses:
+        200:
+          description: "Успешное выполнение запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserShallow"
+        400:
+          description: "Пользовательская ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        500:
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+
+  /users/{user_id}:
+    get:
+      tags:
+        - "user"
+      summary: "Возвращает подробную информацию о пользователе"
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: integer
+            format: string
+      responses:
+        200:
+          description: "Успешное выполнение запроса"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Пользовательская ошибка"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        500:
+          description: "Ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+
+components:
+  schemas:
+
+    Game:
+      allOf:
+        - $ref: "#/components/schemas/GameShallow"
+      type: object
+      properties:
+        media_links:
+          type: array
+          items:
+            type: string
+            example: "https://cdn.akamai.steamstatic.com/steam/apps/50130/ss_cc388ac2dde48392021c0d2d7ea67c851b44031d.1920x1080.jpg?t=1589909831"
+        system_requirements:
+          type: array
+          items:
+            $ref: "#/components/schemas/SystemRequirement"
+
+    GameShallow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+          example: "100"
+        title:
+          type: string
+          example: "Mafia II"
+        description:
+          type: string
+          example: "Vito Scaletta has started to make a name for himself on the streets of Empire Bay as someone who can be trusted to get a job done"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/GameTag"
+        platforms:
+          type: array
+          items:
+            $ref: "#/components/schemas/GamePlatform"
+        prices:
+          type: array
+          items:
+            $ref: "#/components/schemas/GamePrice"
+        release_date:
+          type: string
+          example: "24.03.2003"
+        developer:
+          type: string
+          example: "2K"
+        publisher:
+          type: string
+          example: "2K"
+
+    GameTag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+          example: "1"
+        name:
+          type: string
+          example: "Blood"
+
+    GameGenre:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+          example: "1"
+        name:
+          type: string
+          example: "RPG"
+
+    GamePlatform:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+          example: "1"
+        name:
+          type: string
+          example: "PC"
+
+    GamePrice:
+      type: object
+      properties:
+        market_name:
+          type: string
+          example: "Steam"
+        price:
+          type: number
+          example: 2499.0
+
+    SystemRequirement:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "CPU"
+        value:
+          type: string
+          example: "Intel Core i5 6400"
+
+    Filter:
+      type: object
+      properties:
+        genres:
+          type: array
+          items:
+            type: string
+        platforms:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        developers:
+          type: array
+          items:
+            type: string
+        publishers:
+          type: array
+          items:
+            type: string
+
+    Sort:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "name"
+        direction:
+          $ref: "#/components/schemas/SortDirection"
+
+    SortDirection:
+      type: string
+      enum:
+        - ASC
+        - DESC
+
+    Paginator:
+      type: object
+      properties:
+        page_number:
+          type: integer
+          example: 1
+        page_size:
+          type: integer
+          example: 20
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+          example: "100"
+        image_url:
+          type: string
+        name:
+          type: string
+        steam_id:
+          type: string
+        friends:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserShallow"
+        games:
+          type: array
+          items:
+            $ref: "#/components/schemas/GameShallow"
+
+    UserShallow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+          example: "100"
+        name:
+          type: string
+          example: "Ivan"
+        image_url:
+          type: string
+          example: "http://game-picker.run/s3/image_ivan.png"
+        friends_number:
+          type: integer
+          example: 12
+        games_number:
+          type: integer
+          example: 53
+
+
+    ResponseError:
+      type: object
+      properties:
+        message:
+          type: string
+        cause:
+          type: string
+        code:
+          type: number
+          enum:
+            - UNKNOWN
+            - DATABASE_ERROR
+            - PARSING_ERROR
