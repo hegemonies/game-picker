@@ -1,23 +1,15 @@
-openapi: "3"
+openapi: "3.0.0"
 
 info:
   description: "Game Picker open api"
   version: "1.0.0"
   title: "Game Picker"
 
-host: "game-picker.ru"
-
-basePath: "/v1"
-
 tags:
   - name: "game"
     description: "Everything about Games"
   - name: "user"
     description: "Everything about User"
-
-schemes:
-  - "https"
-  - "http"
 
 paths:
 
@@ -44,19 +36,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/GameShallow"
+                $ref: "#/components/schemas/GameShallow"
         400:
           description: "Пользовательская ошибка"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
         500:
           description: "Ошибка сервера"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
 
   /games/{game_id}:
     get:
@@ -77,19 +69,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/Game"
+                $ref: "#/components/schemas/Game"
         400:
           description: "Пользовательская ошибка"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
         500:
           description: "Ошибка сервера"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
 
   /games:
     post:
@@ -104,30 +96,30 @@ paths:
               type: object
               properties:
                 filter:
-                  $ref: "#/components/schema/Filter"
+                  $ref: "#/components/schemas/Filter"
                 sort:
-                  $ref: "#/components/schema/Sort"
+                  $ref: "#/components/schemas/Sort"
                 paginator:
-                  $ref: "#/components/schema/Paginator"
+                  $ref: "#/components/schemas/Paginator"
       responses:
         200:
           description: "Успешное выполнение запроса"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/GameShallow"
+                $ref: "#/components/schemas/GameShallow"
         400:
           description: "Пользовательская ошибка"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
         500:
           description: "Ошибка сервера"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
 
   /users:
     get:
@@ -140,22 +132,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/UserShallow"
+                $ref: "#/components/schemas/UserShallow"
         400:
           description: "Пользовательская ошибка"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
         500:
           description: "Ошибка сервера"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
 
   /users/{user_id}:
     get:
+      tags:
+        - "user"
       summary: "Возвращает подробную информацию о пользователе"
       parameters:
         - name: user_id
@@ -171,35 +165,37 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/User"
+                $ref: "#/components/schemas/User"
         400:
           description: "Пользовательская ошибка"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
         500:
           description: "Ошибка сервера"
           content:
             application/json:
               schema:
-                $ref: "#/components/schema/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
 
 components:
   schemas:
 
     Game:
       allOf:
-        - $ref: "#/components/schema/GameShallow"
+        - $ref: "#/components/schemas/GameShallow"
       type: object
       properties:
         media_links:
           type: array
-          example: "https://cdn.akamai.steamstatic.com/steam/apps/50130/ss_cc388ac2dde48392021c0d2d7ea67c851b44031d.1920x1080.jpg?t=1589909831"
+          items:
+            type: string
+            example: "https://cdn.akamai.steamstatic.com/steam/apps/50130/ss_cc388ac2dde48392021c0d2d7ea67c851b44031d.1920x1080.jpg?t=1589909831"
         system_requirements:
           type: array
           items:
-            $ref: "#/components/schema/SystemRequirement"
+            $ref: "#/components/schemas/SystemRequirement"
 
     GameShallow:
       type: object
@@ -217,15 +213,15 @@ components:
         tags:
           type: array
           items:
-            $ref: "#/components/schema/GameTag"
+            $ref: "#/components/schemas/GameTag"
         platforms:
           type: array
           items:
-            $ref: "#/components/schema/GamePlatform"
+            $ref: "#/components/schemas/GamePlatform"
         prices:
           type: array
           items:
-            $ref: "#/components/schema/GamePrice"
+            $ref: "#/components/schemas/GamePrice"
         release_date:
           type: string
           example: "24.03.2003"
@@ -326,7 +322,7 @@ components:
           type: string
           example: "name"
         direction:
-          $ref: "#/components/schema/SortDirection"
+          $ref: "#/components/schemas/SortDirection"
 
     SortDirection:
       type: string
@@ -360,11 +356,11 @@ components:
         friends:
           type: array
           items:
-            $ref: "#/components/schema/UserShallow"
+            $ref: "#/components/schemas/UserShallow"
         games:
           type: array
           items:
-            $ref: "#/components/schema/GameShallow"
+            $ref: "#/components/schemas/GameShallow"
 
     UserShallow:
       type: object
