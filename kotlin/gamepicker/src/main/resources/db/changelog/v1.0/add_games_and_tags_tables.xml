@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="Daniil Dyachenko">
+
+        <createTable tableName="games">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="title" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="description" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <!!!>
+        </createTable>
+
+        <!--    Tag    -->
+
+        <createTable tableName="tags">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="games_tags">
+            <column name="game_id" type="bigint">
+                <constraints nullable="false"
+                             referencedTableName="games"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+
+            <column name="tag_id" type="bigint">
+                <constraints nullable="false"
+                             referencedTableName="tags"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey clustered="true"
+                       columnNames="game_id, tag_id"
+                       constraintName="pk_games_tags"
+                       tableName="games_tags"
+                       validate="true"/>
+
+        <!--    Tag    -->
+        <!--    Ganre    -->
+
+        <createTable tableName="genres">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="games_genres">
+            <column name="game_id" type="bigint">
+                <constraints nullable="false"
+                             referencedTableName="games"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+
+            <column name="genre_id" type="bigint">
+                <constraints nullable="false"
+                             referencedTableName="genres"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey clustered="true"
+                       columnNames="game_id, genre_id"
+                       constraintName="pk_games_genres"
+                       tableName="games_genres"
+                       validate="true"/>
+
+        <!--    Ganre    -->
+        <!--    Platform    -->
+
+        <createTable tableName="platforms">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="games_platforms">
+            <column name="game_id" type="bigint">
+                <constraints nullable="false"
+                             referencedTableName="games"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+
+            <column name="platform_id" type="bigint">
+                <constraints nullable="false"
+                             referencedTableName="platforms"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey clustered="true"
+                       columnNames="game_id, platform_id"
+                       constraintName="pk_games_platforms"
+                       tableName="games_platforms"
+                       validate="true"/>
+
+        <!--    Platform    -->
+
+        <createTable tableName="prices">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="market_name" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="price" type="integer">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="game_id" type="bigint">
+                <constraints
+                        deleteCascade="true"
+                        referencedTableName="games"
+                        referencedColumnNames="id"
+                        nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>
