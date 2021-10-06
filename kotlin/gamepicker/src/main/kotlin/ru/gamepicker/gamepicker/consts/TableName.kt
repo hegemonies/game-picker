@@ -7,4 +7,6 @@ object TableName {
     const val GAME_PICKER_GENRES = "genres"
     const val GAME_PICKER_PLATFORMS = "platforms"
     const val GAME_PICKER_PRICES = "prices"
+    const val GAME_PICKER_DEVELOPERS = "developers"
+    const val GAME_PICKER_PUBLISHERS = "publishers"
 }

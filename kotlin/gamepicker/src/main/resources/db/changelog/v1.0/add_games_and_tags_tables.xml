@@ -20,7 +20,17 @@
                 <constraints nullable="false"/>
             </column>
 
-            <!!!>
+            <column name="release_date" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="publisher_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="developer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <!--    Tag    -->
@@ -128,6 +138,7 @@
                        validate="true"/>
 
         <!--    Platform    -->
+        <!--    Price    -->
 
         <createTable tableName="prices">
             <column name="id" type="bigserial" autoIncrement="true">
@@ -150,6 +161,34 @@
                         nullable="false"/>
             </column>
         </createTable>
+
+        <!--    Price    -->
+        <!--    Developer    -->
+
+        <createTable tableName="developers">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--    Developer    -->
+        <!--    Publisher    -->
+
+        <createTable tableName="publishers">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--    Publisher    -->
 
     </changeSet>
 
