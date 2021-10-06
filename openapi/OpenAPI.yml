@@ -13,43 +13,6 @@ tags:
 
 paths:
 
-  /games?page_number={page_number}&page_size={page_size}:
-    get:
-      tags:
-        - "game"
-      summary: "Список всех игр"
-      description: "Возвращает список всех игр с минимальной информацией фиксированного размера"
-      parameters:
-        - in: query
-          name: page_number
-          schema:
-            type: integer
-          description: The number of page
-        - in: query
-          name: page_size
-          schema:
-            type: integer
-          description: The numbers of page size
-      responses:
-        200:
-          description: "Успешное выполнение запроса"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GameShallow"
-        400:
-          description: "Пользовательская ошибка"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResponseError"
-        500:
-          description: "Ошибка сервера"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResponseError"
-
   /games/{game_id}:
     get:
       tags:
@@ -222,15 +185,17 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/GamePrice"
+        genres:
+          type: array
+          items:
+            $ref: "#/components/schemas/GameGenre"
         release_date:
           type: string
           example: "24.03.2003"
         developer:
-          type: string
-          example: "2K"
+          $ref: "#/components/schemas/Developer"
         publisher:
-          type: string
-          example: "2K"
+          $ref: "#/components/schemas/Publisher"
 
     GameTag:
       type: object
@@ -284,6 +249,28 @@ components:
         value:
           type: string
           example: "Intel Core i5 6400"
+
+    Publisher:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+          example: 10
+        name:
+          type: string
+          example: "2K"
+
+    Developer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uint64
+          example: 1
+        name:
+          type: string
+          example: "2K"
 
     Filter:
       type: object
