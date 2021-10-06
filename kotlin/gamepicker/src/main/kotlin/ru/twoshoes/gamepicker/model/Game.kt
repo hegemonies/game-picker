@@ -1,6 +1,6 @@
-package ru.gamepicker.gamepicker.model
+package ru.twoshoes.gamepicker.model
 
-import ru.gamepicker.gamepicker.consts.TableName
+import ru.twoshoes.gamepicker.consts.TableName
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue

@@ -1,7 +1,7 @@
-package ru.gamepicker.gamepicker.model
+package ru.twoshoes.gamepicker.model
 
 import org.hibernate.Hibernate
-import ru.gamepicker.gamepicker.consts.TableName
+import ru.twoshoes.gamepicker.consts.TableName
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -10,12 +10,11 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = TableName.GAME_PICKER_PLATFORMS)
-data class Platform(
+@Table(name = TableName.GAME_PICKER_DEVELOPERS)
+data class Developer(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     val id: Long = 0,
 
     val name: String
@@ -23,7 +22,7 @@ data class Platform(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as Platform
+        other as Developer
 
         return id == other.id
     }

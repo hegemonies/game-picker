@@ -9,7 +9,7 @@ plugins {
     id("com.google.cloud.tools.jib") version "3.1.4"
 }
 
-group = "ru.gamepicker"
+group = "ru.twoshoes"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 

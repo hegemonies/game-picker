@@ -1,4 +1,4 @@
-package ru.gamepicker.gamepicker.consts
+package ru.twoshoes.gamepicker.consts
 
 object TableName {
     const val GAME_PICKER_GAMES = "games"

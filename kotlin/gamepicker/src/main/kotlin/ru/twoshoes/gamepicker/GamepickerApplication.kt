@@ -1,4 +1,4 @@
-package ru.gamepicker.gamepicker
+package ru.twoshoes.gamepicker
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
