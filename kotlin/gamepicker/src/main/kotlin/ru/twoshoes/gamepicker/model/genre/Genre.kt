@@ -1,4 +1,4 @@
-package ru.twoshoes.gamepicker.model
+package ru.twoshoes.gamepicker.model.genre
 
 import org.hibernate.Hibernate
 import ru.twoshoes.gamepicker.consts.TableName.GAME_PICKER_GENRES
@@ -7,6 +7,7 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity
@@ -18,7 +19,10 @@ data class Genre(
     @Column(name = "id", nullable = false)
     val id: Long = 0,
 
-    val name: String
+    val name: String,
+
+    @OneToMany(mappedBy = "genre")
+    val games: List<GenresGames> = emptyList()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

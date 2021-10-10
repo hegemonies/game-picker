@@ -4,9 +4,11 @@ import org.hibernate.Hibernate
 import ru.twoshoes.gamepicker.consts.TableName
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity
@@ -17,7 +19,10 @@ data class Developer(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    val name: String
+    val name: String,
+
+    @OneToMany(mappedBy = "developer", fetch = FetchType.EAGER)
+    val games: Set<Game> = emptySet()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

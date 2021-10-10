@@ -1,29 +1,34 @@
-package ru.twoshoes.gamepicker.model
+package ru.twoshoes.gamepicker.model.tag
 
 import org.hibernate.Hibernate
 import ru.twoshoes.gamepicker.consts.TableName
+import ru.twoshoes.gamepicker.model.platform.PlatformsGames
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity
-@Table(name = TableName.GAME_PICKER_PLATFORMS)
-data class Platform(
+@Table(name = TableName.GAME_PICKER_TAGS)
+data class Tag(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     val id: Long = 0,
 
-    val name: String
+    val name: String,
+
+    @OneToMany(mappedBy = "tag")
+    val games: List<TagsGames> = emptyList()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as Platform
+        other as Tag
 
         return id == other.id
     }
