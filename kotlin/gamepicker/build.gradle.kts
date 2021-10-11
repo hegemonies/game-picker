@@ -28,6 +28,9 @@ dependencies {
     // Spring web
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
+    // Quartz
+    implementation("org.springframework.boot:spring-boot-starter-quartz")
+
     // Json
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
@@ -36,6 +39,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+
+    // ArrowKt
+    implementation("io.arrow-kt:arrow-core:1.0.0")
 
     // Postgres
     runtimeOnly("org.postgresql:postgresql")
