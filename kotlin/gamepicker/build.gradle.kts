@@ -79,7 +79,7 @@ jib {
 
         user = "nobody"
 
-        creationTime = "$rootProject.commitTime"
+//        creationTime = "$rootProject.commitTime"
 
 //        environment = [
 //            "IMAGE_VERSION": "latest",
