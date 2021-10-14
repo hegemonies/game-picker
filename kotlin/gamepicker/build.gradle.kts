@@ -40,6 +40,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
+    // macOS netty fix
+    runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.69.Final:osx-aarch_64")
+
     // ArrowKt
     implementation("io.arrow-kt:arrow-core:1.0.0")
 

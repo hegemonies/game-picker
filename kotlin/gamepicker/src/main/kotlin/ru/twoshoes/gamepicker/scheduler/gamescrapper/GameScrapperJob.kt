@@ -34,14 +34,16 @@ class GameScrapperJob(
             return
         }
 
-        games.applist.apps.asFlow().collect { game ->
-            val page = steamService.getHtmlPage(gameId = game.appid).getOrHandle { error ->
-                logger.warn("Can not get steam page by id: ${game.appid}")
-                return@collect
-            }
+        logger.debug("Count of games = ${games.applist.apps.size}")
 
-            
-        }
+//        games.applist.apps.asFlow().collect { game ->
+//            val page = steamService.getHtmlPage(gameId = game.appid).getOrHandle { error ->
+//                logger.warn("Can not get steam page by id: ${game.appid}")
+//                return@collect
+//            }
+//
+//            logger.debug("Scrap ")
+//        }
     }
 
     companion object {

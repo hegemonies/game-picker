@@ -10,7 +10,5 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "game-scrapper")
 class GameScrapperProperty(
 
-    val interval: Duration,
-
-    val steamBaseUrl: String
+    val interval: Duration
 )

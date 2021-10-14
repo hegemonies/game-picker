@@ -11,5 +11,8 @@ import javax.validation.constraints.NotEmpty
 data class SteamProperty(
 
     @field:NotEmpty
-    val baseUrl: String
+    val apiUrl: String,
+
+    @field:NotEmpty
+    val storeUrl: String
 )
