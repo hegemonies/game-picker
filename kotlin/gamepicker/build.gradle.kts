@@ -46,10 +46,13 @@ dependencies {
     // ArrowKt
     implementation("io.arrow-kt:arrow-core:1.0.0")
 
+    // Html parser
+    implementation("org.jsoup:jsoup:1.14.3")
+
     // Postgres
     runtimeOnly("org.postgresql:postgresql")
 
-	// Tests
+    // Tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
 }

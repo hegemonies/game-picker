@@ -10,26 +10,23 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = TableName.GAME_PICKER_PRICES)
-data class Price(
-
+@Table(name = TableName.GAME_PICKER_MEDIA_LINKS)
+data class MediaLink(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     val id: Long = 0,
 
+    @Column(name = "media_link")
+    val mediaLink: String,
+
     @Column(name = "game_id")
-    val gameId: Long,
-
-    @Column(name = "market_name")
-    val marketName: String,
-
-    val price: Int
+    val gameId: Long
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as Price
+        other as MediaLink
 
         return id == other.id
     }
@@ -38,11 +35,6 @@ data class Price(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName +
-                "(id = $id ," +
-                " gameId = $gameId ," +
-                " marketName = $marketName ," +
-                " price = $price" +
-                " )"
+        return this::class.simpleName + "(id = $id , mediaLink = $mediaLink , gameId = $gameId )"
     }
 }

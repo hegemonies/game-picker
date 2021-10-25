@@ -1,4 +1,4 @@
-package ru.twoshoes.gamepicker.service
+package ru.twoshoes.gamepicker.service.steam
 
 import arrow.core.Either
 import ru.twoshoes.gamepicker.dto.GetAllSteamGamesResponse

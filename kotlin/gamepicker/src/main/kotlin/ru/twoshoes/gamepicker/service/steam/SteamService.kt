@@ -1,14 +1,12 @@
-package ru.twoshoes.gamepicker.service
+package ru.twoshoes.gamepicker.service.steam
 
 import arrow.core.Either
-import arrow.core.getOrHandle
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.bodyToMono
 import ru.twoshoes.gamepicker.configuration.property.SteamProperty
 import ru.twoshoes.gamepicker.dto.GetAllSteamGamesResponse
@@ -51,25 +49,14 @@ class SteamService(
 
         logger.debug("Getting all games from steam")
 
-        logger.debug(
-            Either.catch {
-                apiWebClient.get()
-                    .uri(url)
-                    .retrieve()
-                    .bodyToMono<GetAllSteamGamesResponse>()
-                    .awaitSingle()
-                    .toString()
-            }.getOrHandle { error ->
-                "Can not get all games: ${error.message}"
-            }
-        )
-
         return Either.catch {
             apiWebClient.get()
                 .uri(url)
                 .retrieve()
                 .bodyToMono<GetAllSteamGamesResponse>()
                 .awaitFirst()
+        }.also {
+            logger.debug("Getting all games from steam is success")
         }
     }
 
