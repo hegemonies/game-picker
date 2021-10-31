@@ -1,6 +1,10 @@
 package ru.twoshoes.gamepicker.consts
 
-object MarketName {
+enum class MarketName(val value: Int) {
+    STEAM(0);
 
-    const val STEAM = "Steam"
+   companion object {
+       fun valueOf(value: Int) =
+           values().find { it.value == value }
+   }
 }

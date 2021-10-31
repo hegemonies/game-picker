@@ -1,6 +1,7 @@
 package ru.twoshoes.gamepicker.model
 
 import org.hibernate.Hibernate
+import ru.twoshoes.gamepicker.consts.MarketName
 import ru.twoshoes.gamepicker.consts.TableName
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -21,8 +22,11 @@ data class Price(
     @Column(name = "game_id")
     val gameId: Long,
 
+    /**
+     * @see [MarketName]
+     */
     @Column(name = "market_name")
-    val marketName: String,
+    val marketName: Int,
 
     val price: Int
 ) {
@@ -41,7 +45,7 @@ data class Price(
         return this::class.simpleName +
                 "(id = $id ," +
                 " gameId = $gameId ," +
-                " marketName = $marketName ," +
+                " marketName = ${MarketName.valueOf(marketName)} ," +
                 " price = $price" +
                 " )"
     }

@@ -16,7 +16,7 @@ class PriceService(
             priceRepository.save(
                 Price(
                     gameId = gameId,
-                    marketName = MarketName.STEAM,
+                    marketName = MarketName.STEAM.value,
                     price = price
                 )
             )

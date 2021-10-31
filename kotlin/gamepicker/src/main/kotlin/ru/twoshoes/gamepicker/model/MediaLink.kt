@@ -13,7 +13,7 @@ import javax.persistence.Table
 @Table(name = TableName.GAME_PICKER_MEDIA_LINKS)
 data class MediaLink(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     val id: Long = 0,
 
