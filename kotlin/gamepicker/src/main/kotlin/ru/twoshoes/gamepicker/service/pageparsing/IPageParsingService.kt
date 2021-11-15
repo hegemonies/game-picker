@@ -11,7 +11,7 @@ interface IPageParsingService {
 
     suspend fun getPrice(document: Document): Either<Throwable, Long>
 
-    suspend fun getMediaLinks(document: Document): Either<Throwable, List<String>>
+    suspend fun getMediaLinks(document: Document, appId: Long): Either<Throwable, List<String>>
 
     suspend fun getDeveloper(document: Document): Either<Throwable, String>
 

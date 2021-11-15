@@ -141,7 +141,7 @@ class GameScrapperJob(
                 return@collect
             }
 
-            val mediaLinks = steamPageParsingService.getMediaLinks(document).getOrHandle { error ->
+            val mediaLinks = steamPageParsingService.getMediaLinks(document, game.appid).getOrHandle { error ->
                 logger.warn("Can not find media links on page of game ${game.appid}, ${game.name}: ${error.message}")
                 return@collect
             }

@@ -20,10 +20,10 @@ repositories {
 dependencies {
     // Spring data
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.hibernate:hibernate-validator:6.1.5.Final")
+    implementation("org.hibernate:hibernate-validator:7.0.1.Final")
 
     // Database migration
-    implementation("org.liquibase:liquibase-core:4.4.3")
+    implementation("org.liquibase:liquibase-core:4.6.1")
 
     // Spring web
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -41,10 +41,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     // macOS netty fix
-    runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.69.Final:osx-aarch_64")
+    runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.70.Final:osx-aarch_64")
 
     // ArrowKt
-    implementation("io.arrow-kt:arrow-core:1.0.0")
+    implementation("io.arrow-kt:arrow-core:1.0.1")
 
     // Html parser
     implementation("org.jsoup:jsoup:1.14.3")
@@ -55,6 +55,11 @@ dependencies {
     // Tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2-native-mt")
+    testImplementation("com.ninja-squad:springmockk:3.0.1")
+    testImplementation("io.projectreactor:reactor-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-validation")
+    testRuntimeOnly("com.h2database:h2:1.4.200")
 }
 
 tasks.withType<KotlinCompile> {

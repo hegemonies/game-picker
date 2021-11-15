@@ -33,20 +33,20 @@ class SteamPageParsingService : IPageParsingService {
         }
     }
 
-    override suspend fun getMediaLinks(document: Document): Either<Throwable, List<String>> {
+    override suspend fun getMediaLinks(document: Document, appId: Long): Either<Throwable, List<String>> {
         return Either.catch {
             document.body()
                 .getElementById("highlight_player_area")
-                ?.siblingElements()
+                ?.children()
                 ?.drop(1)
-                ?.map { mediaElement ->
+                ?.mapNotNull { mediaElement ->
                     if (mediaElement.hasClass("highlight_player_item highlight_screenshot")) {
                         val linkPostfix = mediaElement.id().substringAfter("highlight_screenshot_")
-                        "https://cdn.cloudflare.steamstatic.com/steam/apps/1196590/$linkPostfix"
+                        "https://cdn.cloudflare.steamstatic.com/steam/apps/$appId/$linkPostfix"
                     } else if (mediaElement.hasClass("highlight_player_item highlight_movie")) {
                         mediaElement.attr("data-webm-source")
                     } else {
-                        ""
+                        null
                     }
                 } ?: emptyList()
         }
@@ -54,27 +54,41 @@ class SteamPageParsingService : IPageParsingService {
 
     override suspend fun getDeveloper(document: Document): Either<Throwable, String> {
         return Either.catch {
-            document.body().getElementsByAttributeValueContaining("href", "developer").first()?.data()
+            document.body()
+                .getElementsByAttributeValueContaining("href", "developer")
+                .first()
+                ?.text()
                 ?: "No developer"
         }
     }
 
     override suspend fun getPublisher(document: Document): Either<Throwable, String> {
         return Either.catch {
-            document.body().getElementsByAttributeValueContaining("href", "publisher").first()?.data()
+            document.body()
+                .getElementsByAttributeValueContaining("href", "publisher")
+                .first()
+                ?.text()
                 ?: "No publisher"
         }
     }
 
     override suspend fun getDescription(document: Document): Either<Throwable, String> {
         return Either.catch {
-            document.body().getElementById("game_area_description")?.data() ?: "No description"
+            document.body()
+                .getElementsByClass("game_description_snippet")
+                .first()
+                ?.text()
+                ?: "No description"
         }
     }
 
     override suspend fun getReleaseDate(document: Document): Either<Throwable, String> {
         return Either.catch {
-            document.body().getElementsByClass("date").first()?.data() ?: "No release date"
+            document.body()
+                .getElementsByClass("date")
+                .first()
+                ?.text()
+                ?: "No release date"
         }
     }
 
