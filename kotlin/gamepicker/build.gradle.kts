@@ -83,7 +83,7 @@ jib {
         image = "pi41:5000/game-picker/backend:latest"
     }
     container {
-        this.mainClass = "ru.gamepicker.gamepicker.GamepickerApplicationKt"
+        // this.mainClass = "ru.gamepicker.gamepicker.GamepickerApplicationKt"
 
         user = "nobody"
 
