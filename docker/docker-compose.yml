@@ -12,11 +12,11 @@ services:
     ports:
       - 5433:5432
     environment:
-      POSTGRES_DB: ${POSTGRES_DATABASE_NAME}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      TZ: ${POSTGRES_TIMEZONE}
-      PGTZ: ${POSTGRES_TIMEZONE}
+      - POSTGRES_DB=${POSTGRES_DATABASE_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=${POSTGRES_TIMEZONE}
+      - PGTZ=${POSTGRES_TIMEZONE}
     networks:
       - gamepickernet
     command: # файл конфигурации нельзя расположить по стандартному пути, т.к. entrypoint его перезапишет при старте
@@ -28,6 +28,7 @@ services:
     image: pi41:5000/game-picker/backend:latest
     restart: always
     environment:
+      - TZ=${POSTGRES_TIMEZONE}
       - GAME-SCRAPPER_INTERVAL=1h
       - POSTGRES_HOST=postgres
       - DATABASE_NAME=${POSTGRES_DATABASE_NAME}
