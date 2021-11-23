@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.5.5"
+    id("org.springframework.boot") version "2.6.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.5.31"
-    kotlin("plugin.spring") version "1.5.31"
-    kotlin("plugin.jpa") version "1.5.31"
+    kotlin("jvm") version "1.6.0"
+    kotlin("plugin.spring") version "1.6.0"
+    kotlin("plugin.jpa") version "1.6.0"
     id("com.google.cloud.tools.jib") version "3.1.4"
 }
 
@@ -52,6 +52,10 @@ dependencies {
     // Postgres
     runtimeOnly("org.postgresql:postgresql")
 
+    // Minio
+    implementation("io.minio:minio:8.3.3")
+//    implementation("com.jlefebure:spring-boot-starter-minio:1.4")
+
     // Tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
@@ -61,6 +65,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-validation")
     testRuntimeOnly("com.h2database:h2:1.4.200")
 }
+
+//configurations {
+//    all {
+//        exclude(group = "com.jlefebure", module = "io.minio:minio")
+//    }
+//}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
