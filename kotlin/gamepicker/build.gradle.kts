@@ -53,6 +53,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     // Minio
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("io.minio:minio:8.3.3")
 //    implementation("com.jlefebure:spring-boot-starter-minio:1.4")
 
@@ -66,11 +67,12 @@ dependencies {
     testRuntimeOnly("com.h2database:h2:1.4.200")
 }
 
-//configurations {
-//    all {
+configurations {
+    all {
 //        exclude(group = "com.jlefebure", module = "io.minio:minio")
-//    }
-//}
+        exclude(group = "io.minio", module = "com.squareup.okhttp3:okhttp")
+    }
+}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
