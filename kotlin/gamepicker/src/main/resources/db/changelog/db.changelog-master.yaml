@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/v1.0/add_games_and_other_tables.xml
+  - include:
+      file: db/changelog/v1.0/add_fields_to_media_link_table.xml

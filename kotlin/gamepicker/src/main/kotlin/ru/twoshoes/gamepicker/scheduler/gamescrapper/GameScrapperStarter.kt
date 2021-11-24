@@ -27,7 +27,7 @@ class GameScrapperStarter(
         val trigger = TriggerBuilder.newTrigger()
             .withSchedule(
                 SimpleScheduleBuilder.simpleSchedule()
-                    .withIntervalInHours(gameScrapperProperty.interval.toHours().toInt())
+                    .withIntervalInMinutes(gameScrapperProperty.interval.toMinutes().toInt())
             )
             .startNow()
             .build()

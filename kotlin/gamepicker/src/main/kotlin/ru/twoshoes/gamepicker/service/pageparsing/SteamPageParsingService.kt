@@ -4,6 +4,7 @@ import arrow.core.Either
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
+import ru.twoshoes.gamepicker.consts.MediaType
 
 class SteamPageParsingService : IPageParsingService {
 
@@ -33,7 +34,7 @@ class SteamPageParsingService : IPageParsingService {
         }
     }
 
-    override suspend fun getMediaLinks(document: Document, appId: Long): Either<Throwable, List<String>> {
+    override suspend fun getMediaLinks(document: Document, appId: Long): Either<Throwable, List<Pair<String, MediaType>>> {
         return Either.catch {
             document.body()
                 .getElementById("highlight_player_area")
@@ -42,9 +43,9 @@ class SteamPageParsingService : IPageParsingService {
                 ?.mapNotNull { mediaElement ->
                     if (mediaElement.hasClass("highlight_player_item highlight_screenshot")) {
                         val linkPostfix = mediaElement.id().substringAfter("highlight_screenshot_")
-                        "https://cdn.cloudflare.steamstatic.com/steam/apps/$appId/$linkPostfix"
+                        "https://cdn.cloudflare.steamstatic.com/steam/apps/$appId/$linkPostfix" to MediaType.IMAGE
                     } else if (mediaElement.hasClass("highlight_player_item highlight_movie")) {
-                        mediaElement.attr("data-webm-source")
+                        mediaElement.attr("data-webm-source") to MediaType.VIDEO
                     } else {
                         null
                     }

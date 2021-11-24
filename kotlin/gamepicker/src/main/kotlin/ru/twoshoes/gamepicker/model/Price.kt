@@ -38,7 +38,7 @@ data class Price(
         return id == other.id
     }
 
-    override fun hashCode(): Int = 0
+    override fun hashCode(): Int = javaClass.hashCode()
 
     @Override
     override fun toString(): String {

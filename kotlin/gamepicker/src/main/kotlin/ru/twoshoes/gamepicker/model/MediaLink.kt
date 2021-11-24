@@ -1,6 +1,7 @@
 package ru.twoshoes.gamepicker.model
 
 import org.hibernate.Hibernate
+import ru.twoshoes.gamepicker.consts.MediaType
 import ru.twoshoes.gamepicker.consts.TableName
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -21,7 +22,15 @@ data class MediaLink(
     val mediaLink: String,
 
     @Column(name = "game_id")
-    val gameId: Long
+    val gameId: Long,
+
+    /**
+     * @see [MediaType]
+     */
+    @Column(name = "media_type")
+    val mediaType: Int,
+
+    val downloaded: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -31,10 +40,16 @@ data class MediaLink(
         return id == other.id
     }
 
-    override fun hashCode(): Int = 0
+    override fun hashCode(): Int = javaClass.hashCode()
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , mediaLink = $mediaLink , gameId = $gameId )"
+        return this::class.simpleName +
+                "(id = $id ," +
+                " mediaLink = $mediaLink ," +
+                " gameId = $gameId ," +
+                " mediaType = $mediaType ," +
+                " downloaded = $downloaded" +
+                " )"
     }
 }
