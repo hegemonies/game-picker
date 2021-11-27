@@ -35,7 +35,8 @@ services:
       - DATABASE_USERNAME=${POSTGRES_USER}
       - DATABASE_PASSWORD=${POSTGRES_PASSWORD}
       - LOGGING_LEVEL_RU_TWOSHOES=DEBUG
-    mem_limit: 512m
+      - MINIO_URL=http://192.168.0.6:9002
+    mem_limit: 1024m
     depends_on:
       - postgres
     networks:
