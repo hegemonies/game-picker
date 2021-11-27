@@ -1,5 +1,6 @@
 package ru.twoshoes.gamepicker.scheduler.gamescrapper
 
+import org.quartz.CalendarIntervalScheduleBuilder
 import org.quartz.JobBuilder
 import org.quartz.SimpleScheduleBuilder
 import org.quartz.TriggerBuilder
@@ -26,7 +27,7 @@ class GameScrapperStarter(
 
         val trigger = TriggerBuilder.newTrigger()
             .withSchedule(
-                SimpleScheduleBuilder.simpleSchedule()
+                CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
                     .withIntervalInMinutes(gameScrapperProperty.interval.toMinutes().toInt())
             )
             .startNow()

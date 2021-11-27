@@ -1,4 +1,4 @@
-package ru.twoshoes.gamepicker.scheduler.s3
+package ru.twoshoes.gamepicker.service.s3
 
 import arrow.core.Either
 import io.minio.*

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 import ru.twoshoes.gamepicker.configuration.property.MinioProperties
-import ru.twoshoes.gamepicker.scheduler.s3.S3Service
+import ru.twoshoes.gamepicker.service.s3.S3Service
 import kotlin.system.measureTimeMillis
 
 @Component

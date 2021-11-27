@@ -1,5 +1,6 @@
 package ru.twoshoes.gamepicker.scheduler.mediadownloader
 
+import org.quartz.CalendarIntervalScheduleBuilder
 import org.quartz.JobBuilder
 import org.quartz.SimpleScheduleBuilder
 import org.quartz.TriggerBuilder
@@ -28,7 +29,7 @@ class MediaDownloaderStarter(
 
             val trigger = TriggerBuilder.newTrigger()
                 .withSchedule(
-                    SimpleScheduleBuilder.simpleSchedule()
+                    CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
                         .withIntervalInMinutes(mediaDownloaderProperty.interval.toMinutes().toInt())
                 )
                 .startNow()

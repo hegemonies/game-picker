@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import ru.twoshoes.gamepicker.configuration.property.MinioProperties
 import ru.twoshoes.gamepicker.consts.MediaType
 import ru.twoshoes.gamepicker.repository.MediaLinkRepository
-import ru.twoshoes.gamepicker.scheduler.s3.IS3Service
+import ru.twoshoes.gamepicker.service.s3.IS3Service
 import ru.twoshoes.gamepicker.service.http.IHttpService
 
 @Component
