@@ -1,42 +1,38 @@
 package ru.twoshoes.gamepicker.service.http
 
 import arrow.core.Either
-import org.springframework.core.io.buffer.DataBuffer
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
-import java.io.ByteArrayOutputStream
-import java.util.concurrent.atomic.AtomicLong
 
 @Service
 class HttpService : IHttpService {
 
     private val webClient by lazy {
-        WebClient.create()
+        WebClient.builder()
+            .exchangeStrategies(
+                ExchangeStrategies.builder()
+                    .codecs { configurer ->
+                        configurer.defaultCodecs().maxInMemorySize(maxSizeFile512mb)
+                    }.build()
+            )
+            .build()
     }
 
-    override suspend fun downloadFile(url: String): Either<Throwable, ByteArrayOutputStream> {
-        return Either.catch {
-            val dataSteam = webClient.get()
+    override suspend fun downloadFile(url: String): Either<Throwable, ByteArray> =
+        Either.catch {
+            val bytes = webClient.get()
                 .uri(url)
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
                 .retrieve()
-                .bodyToFlux(DataBuffer::class.java)
-
-            val fileWriteOffset = AtomicLong(0)
-            val outputSteam = ByteArrayOutputStream()
-
-            outputSteam.use { byteArrayOutputStream ->
-                dataSteam.subscribe { dataBuffer ->
-                    val readableByteCount = dataBuffer.readableByteCount()
-                    val destinationByteArray = ByteArray(readableByteCount)
-                    dataBuffer.read(destinationByteArray)
-                    fileWriteOffset.addAndGet(readableByteCount.toLong())
-                    byteArrayOutputStream.write(destinationByteArray)
-                }
-            }
-
-            outputSteam
+                .bodyToMono(ByteArray::class.java)
+                .awaitSingle()
+            bytes
         }
+
+    companion object {
+        const val maxSizeFile512mb = 512 * 1024 * 1024
     }
 }

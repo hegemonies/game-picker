@@ -1,8 +1,6 @@
 package ru.twoshoes.gamepicker.scheduler.mediadownloader
 
 import arrow.core.getOrHandle
-import io.minio.MinioClient
-import io.minio.PutObjectArgs
 import kotlinx.coroutines.runBlocking
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
@@ -12,14 +10,14 @@ import org.springframework.stereotype.Component
 import ru.twoshoes.gamepicker.configuration.property.MinioProperties
 import ru.twoshoes.gamepicker.consts.MediaType
 import ru.twoshoes.gamepicker.repository.MediaLinkRepository
+import ru.twoshoes.gamepicker.scheduler.s3.IS3Service
 import ru.twoshoes.gamepicker.service.http.IHttpService
-import java.io.ByteArrayInputStream
 
 @Component
 class MediaDownloaderJob(
     private val httpService: IHttpService,
     private val mediaLinkRepository: MediaLinkRepository,
-    private val minioClient: MinioClient,
+    private val s3Service: IS3Service,
     private val minioProperties: MinioProperties
 ) : QuartzJobBean() {
 
@@ -32,7 +30,7 @@ class MediaDownloaderJob(
                 val mediaLinks = mediaLinkRepository.findAll(page).content
 
                 mediaLinks.forEach { mediaLink ->
-                    val fileSteam = httpService.downloadFile(mediaLink.mediaLink).getOrHandle { error ->
+                    val byteArray = httpService.downloadFile(mediaLink.mediaLink).getOrHandle { error ->
                         logger.warn("Can not download file ${mediaLink.mediaLink}: ${error.message}", error)
                         return@forEach
                     }
@@ -40,14 +38,17 @@ class MediaDownloaderJob(
                     val mediaType = MediaType.valueOf(mediaLink.mediaType)
                         ?: throw Throwable("Not found such media type as ${mediaLink.mediaType}")
 
-                    minioClient.putObject(
-                        PutObjectArgs.builder()
-                            .bucket(minioProperties.bucket)
-                            .contentType(mediaType.contentType)
-                            .`object`(mediaLink.mediaLink.replace(oldChar = '/', newChar = '\\'))
-                            .stream(ByteArrayInputStream(fileSteam.toByteArray()), 0, -1)
-                            .build()
-                    )
+                    val fileName = mediaLink.mediaLink.replace(oldChar = '/', newChar = '\\')
+
+                    s3Service.saveToBucket(
+                        bytes = byteArray,
+                        bucketName = minioProperties.bucket,
+                        contentType = mediaType.contentType,
+                        fileName = fileName
+                    ).getOrHandle { error ->
+                        logger.warn("Can not save file $fileName to bucket ${minioProperties.bucket}: ${error.message}")
+                        return@forEach
+                    }
 
                     mediaLinkRepository.setDownloaded(mediaLink.id)
                 }
