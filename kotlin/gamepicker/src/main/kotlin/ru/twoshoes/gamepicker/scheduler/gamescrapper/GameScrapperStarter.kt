@@ -2,7 +2,6 @@ package ru.twoshoes.gamepicker.scheduler.gamescrapper
 
 import org.quartz.CalendarIntervalScheduleBuilder
 import org.quartz.JobBuilder
-import org.quartz.SimpleScheduleBuilder
 import org.quartz.TriggerBuilder
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener

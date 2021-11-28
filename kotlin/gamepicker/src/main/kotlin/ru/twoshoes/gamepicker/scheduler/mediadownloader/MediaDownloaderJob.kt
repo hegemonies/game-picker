@@ -27,7 +27,7 @@ class MediaDownloaderJob(
 
             do {
                 val page = PageRequest.of(pageNumber++, 100)
-                val mediaLinks = mediaLinkRepository.findAll(page).content
+                val mediaLinks = mediaLinkRepository.findAllByDownloaded(false, page).content
 
                 mediaLinks.forEach { mediaLink ->
                     val byteArray = httpService.downloadFile(mediaLink.mediaLink).getOrHandle { error ->
