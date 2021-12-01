@@ -22,6 +22,8 @@ class MediaDownloaderJob(
 ) : QuartzJobBean() {
 
     override fun executeInternal(context: JobExecutionContext): Unit = runBlocking {
+        logger.info("Start media downloader")
+
         runCatching {
             var pageNumber = 0
 
@@ -30,6 +32,8 @@ class MediaDownloaderJob(
                 val mediaLinks = mediaLinkRepository.findAllByDownloaded(false, page).content
 
                 mediaLinks.forEach { mediaLink ->
+                    logger.debug("Downloading file from ${mediaLink.mediaLink}")
+
                     val byteArray = httpService.downloadFile(mediaLink.mediaLink).getOrHandle { error ->
                         logger.warn("Can not download file ${mediaLink.mediaLink}: ${error.message}", error)
                         return@forEach
@@ -39,6 +43,8 @@ class MediaDownloaderJob(
                         ?: throw Throwable("Not found such media type as ${mediaLink.mediaType}")
 
                     val fileName = mediaLink.mediaLink.replace(oldChar = '/', newChar = '\\')
+
+                    logger.debug("Save file ${mediaLink.mediaLink} to S3 in bucket ${minioProperties.bucket}")
 
                     s3Service.saveToBucket(
                         bytes = byteArray,
@@ -56,6 +62,8 @@ class MediaDownloaderJob(
         }.onFailure { error ->
             logger.error("Can not download media files: ${error.message}", error)
         }
+
+        logger.info("Finish media downloader")
     }
 
     companion object {
