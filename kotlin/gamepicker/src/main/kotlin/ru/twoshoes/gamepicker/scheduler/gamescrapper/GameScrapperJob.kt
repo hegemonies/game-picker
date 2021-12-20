@@ -136,7 +136,7 @@ class GameScrapperJob(
                 return@collect
             }
 
-            priceService.saveSteamPrice(price = price.toInt(), gameId = gameModel.id).getOrHandle { error ->
+            priceService.saveSteamPrice(price = price / 100.0, gameId = gameModel.id).getOrHandle { error ->
                 logger.warn("Can not find release date on page of game ${game.appid}, ${game.name}: ${error.message}")
                 return@collect
             }

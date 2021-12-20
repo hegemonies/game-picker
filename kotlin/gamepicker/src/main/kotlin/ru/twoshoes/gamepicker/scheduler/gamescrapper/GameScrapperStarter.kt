@@ -3,6 +3,7 @@ package ru.twoshoes.gamepicker.scheduler.gamescrapper
 import org.quartz.CalendarIntervalScheduleBuilder
 import org.quartz.JobBuilder
 import org.quartz.TriggerBuilder
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
@@ -17,21 +18,34 @@ class GameScrapperStarter(
 
     @EventListener(ApplicationReadyEvent::class)
     fun start() {
-        val identity = "game-scrapper-job"
+        runCatching {
 
-        val job = JobBuilder.newJob(GameScrapperJob::class.java)
-            .storeDurably()
-            .withIdentity(identity)
-            .build()
+            if (!gameScrapperProperty.enable) {
+                logger.info("Game scrapper is not enable")
+                return
+            }
 
-        val trigger = TriggerBuilder.newTrigger()
-            .withSchedule(
-                CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
-                    .withIntervalInMinutes(gameScrapperProperty.interval.toMinutes().toInt())
-            )
-            .startNow()
-            .build()
+            val identity = "game-scrapper-job"
 
-        schedulerFactory.scheduler.scheduleJob(job, setOf(trigger), true)
+            val job = JobBuilder.newJob(GameScrapperJob::class.java)
+                .storeDurably()
+                .withIdentity(identity)
+                .build()
+
+            val trigger = TriggerBuilder.newTrigger()
+                .withSchedule(
+                    CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
+                        .withIntervalInMinutes(gameScrapperProperty.interval.toMinutes().toInt())
+                )
+                .build()
+
+            schedulerFactory.scheduler.scheduleJob(job, setOf(trigger), true)
+        }.onFailure { error ->
+            logger.error("Can not schedule of game scrapper job: ${error.message}", error)
+        }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 }

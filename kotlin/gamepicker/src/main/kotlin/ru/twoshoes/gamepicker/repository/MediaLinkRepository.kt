@@ -16,4 +16,6 @@ interface MediaLinkRepository : JpaRepository<MediaLink, Long> {
     fun setDownloaded(mediaLinkId: Long): Int
 
     fun findAllByDownloaded(downloaded: Boolean, pageable: Pageable): Page<MediaLink>
+
+    fun findAllByGameId(gameId: Long): List<MediaLink>
 }

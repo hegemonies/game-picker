@@ -153,8 +153,7 @@ components:
         media_links:
           type: array
           items:
-            type: string
-            example: "https://cdn.akamai.steamstatic.com/steam/apps/50130/ss_cc388ac2dde48392021c0d2d7ea67c851b44031d.1920x1080.jpg?t=1589909831"
+            $ref: "#/components/schemas/MediaLink"
         system_requirements:
           type: array
           items:
@@ -239,6 +238,16 @@ components:
         price:
           type: number
           example: 2499.0
+
+    MediaLink:
+      type: object
+      properties:
+        media_link:
+          type: string
+          example: "https://cdn.akamai.steamstatic.com/steam/apps/50130/ss_cc388ac2dde48392021c0d2d7ea67c851b44031d.1920x1080.jpg?t=1589909831"
+        type:
+          type: string
+          example: "IMAGE"
 
     SystemRequirement:
       type: object

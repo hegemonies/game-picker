@@ -28,7 +28,7 @@ data class Price(
     @Column(name = "market_name")
     val marketName: Int,
 
-    val price: Int
+    val price: Double
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

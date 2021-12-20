@@ -19,6 +19,11 @@ class MediaDownloaderStarter(
     @EventListener(ApplicationReadyEvent::class)
     fun createJob() {
         runCatching {
+            if (!mediaDownloaderProperty.enable) {
+                logger.info("Media downloader is not enable")
+                return
+            }
+
             val identity = "media-downloader"
 
             val job = JobBuilder.newJob(MediaDownloaderJob::class.java)
@@ -31,7 +36,6 @@ class MediaDownloaderStarter(
                     CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
                         .withIntervalInMinutes(mediaDownloaderProperty.interval.toMinutes().toInt())
                 )
-                .startNow()
                 .build()
 
             schedulerFactory.scheduler.scheduleJob(job, setOf(trigger), true)

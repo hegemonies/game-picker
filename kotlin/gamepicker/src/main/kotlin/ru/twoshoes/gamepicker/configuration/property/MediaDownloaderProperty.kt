@@ -10,5 +10,7 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "media-downloader")
 class MediaDownloaderProperty(
 
-    val interval: Duration
+    val interval: Duration,
+
+    val enable: Boolean
 )

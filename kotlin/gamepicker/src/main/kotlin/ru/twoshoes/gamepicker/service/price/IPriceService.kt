@@ -5,5 +5,5 @@ import ru.twoshoes.gamepicker.model.Price
 
 interface IPriceService {
 
-    fun saveSteamPrice(price: Int, gameId: Long): Either<Throwable, Price>
+    fun saveSteamPrice(price: Double, gameId: Long): Either<Throwable, Price>
 }

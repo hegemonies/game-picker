@@ -11,7 +11,7 @@ import javax.persistence.MapsId
 import javax.persistence.Table
 
 @Entity
-@Table(name = TableName.GAME_PICKER_GENRES_GAMES)
+@Table(name = TableName.GAME_PICKER_GAMES_GENRES)
 data class GenresGames(
     @EmbeddedId
     val id: GenresGamesKey,
@@ -32,7 +32,7 @@ data class GenresGames(
         return id == other.id
     }
 
-    override fun hashCode(): Int = Objects.hash(id);
+    override fun hashCode(): Int = Objects.hash(id)
 
     @Override
     override fun toString(): String {

@@ -9,7 +9,7 @@ import javax.persistence.MapsId
 import javax.persistence.Table
 
 @Entity
-@Table(name = TableName.GAME_PICKER_PLATFORMS_GAMES)
+@Table(name = TableName.GAME_PICKER_GAMES_PLATFORMS)
 data class PlatformsGames(
     @EmbeddedId
     val id: PlatformsGamesKey,

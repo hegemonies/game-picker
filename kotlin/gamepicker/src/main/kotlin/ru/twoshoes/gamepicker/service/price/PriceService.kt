@@ -11,7 +11,7 @@ class PriceService(
     private val priceRepository: PriceRepository
 ) : IPriceService {
 
-    override fun saveSteamPrice(price: Int, gameId: Long): Either<Throwable, Price> {
+    override fun saveSteamPrice(price: Double, gameId: Long): Either<Throwable, Price> {
         return Either.catch {
             priceRepository.save(
                 Price(

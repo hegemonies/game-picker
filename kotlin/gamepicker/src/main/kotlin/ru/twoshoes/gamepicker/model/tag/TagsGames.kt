@@ -29,10 +29,10 @@ data class TagsGames(
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
         other as TagsGames
 
-        return id != null && id == other.id
+        return id == other.id
     }
 
-    override fun hashCode(): Int = Objects.hash(id);
+    override fun hashCode(): Int = Objects.hash(id)
 
     @Override
     override fun toString(): String {
