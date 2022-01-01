@@ -11,4 +11,4 @@ data class PlatformsGamesKey(
 
     @Column(name = "game_id")
     val gameId: Long
-): Serializable
+) : Serializable

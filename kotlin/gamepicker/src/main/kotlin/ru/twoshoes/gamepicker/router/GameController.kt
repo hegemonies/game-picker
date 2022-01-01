@@ -1,9 +1,10 @@
 package ru.twoshoes.gamepicker.router
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RestController
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.springframework.web.bind.annotation.*
+import ru.twoshoes.gamepicker.dto.getgames.GetGamesRequestDto
+import ru.twoshoes.gamepicker.dto.getgames.GetGamesResponseDto
 import ru.twoshoes.gamepicker.service.game.GameService
 
 @RestController
@@ -12,8 +13,10 @@ class GameController(
 ) {
 
     @PostMapping("/games")
-    suspend fun getGames(): Unit {
-        gameService.getGames()
+    suspend fun getGames(@RequestBody request: GetGamesRequestDto): GetGamesResponseDto {
+        return withContext(Dispatchers.IO) {
+            gameService.getGames(request)
+        }
     }
 
     @GetMapping("/games/{game_id}")

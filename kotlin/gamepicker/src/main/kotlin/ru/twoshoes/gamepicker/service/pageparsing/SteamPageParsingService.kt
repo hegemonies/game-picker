@@ -34,7 +34,10 @@ class SteamPageParsingService : IPageParsingService {
         }
     }
 
-    override suspend fun getMediaLinks(document: Document, appId: Long): Either<Throwable, List<Pair<String, MediaType>>> {
+    override suspend fun getMediaLinks(
+        document: Document,
+        appId: Long
+    ): Either<Throwable, List<Pair<String, MediaType>>> {
         return Either.catch {
             document.body()
                 .getElementById("highlight_player_area")

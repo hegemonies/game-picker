@@ -11,7 +11,10 @@ class MediaLinkService(
     private val mediaLinkRepository: MediaLinkRepository
 ) : IMediaLinkService {
 
-    override fun saveMediaLinks(mediaLinks: List<Pair<String, MediaType>>, gameId: Long): Either<Throwable, List<MediaLink>> =
+    override fun saveMediaLinks(
+        mediaLinks: List<Pair<String, MediaType>>,
+        gameId: Long
+    ): Either<Throwable, List<MediaLink>> =
         Either.catch {
             mediaLinkRepository.saveAll(
                 mediaLinks.map { (mediaLink, mediaType) ->
