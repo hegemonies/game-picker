@@ -88,7 +88,7 @@ tasks.withType<Test> {
 jib {
 
     from {
-        image = "pi41:5000/java-base-image:11-jre"
+        image = "pi41:5000/java-base-image:17"
     }
 
     to {
