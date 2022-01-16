@@ -17,7 +17,17 @@ class SteamService(
 ) : ISteamService {
 
     private val storeWebClient by lazy {
-        WebClient.create(steamProperty.storeUrl)
+        WebClient.builder()
+            .exchangeStrategies(
+                ExchangeStrategies.builder()
+                    .codecs { configurer ->
+                        configurer.defaultCodecs()
+                            .maxInMemorySize(32 * 1024 * 1024)
+                    }
+                    .build()
+            )
+            .baseUrl(steamProperty.storeUrl)
+            .build()
     }
 
     private val apiWebClient by lazy {
