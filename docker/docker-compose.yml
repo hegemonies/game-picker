@@ -33,6 +33,7 @@ services:
     image: pi41:5000/game-picker/backend:latest
     restart: always
     environment:
+      - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8 -Xmx1536M
       - TZ=${TIMEZONE}
       - GAME-SCRAPPER_INTERVAL=1h
       - MEDIA-DOWNLOADER_INTERVAL=1h
