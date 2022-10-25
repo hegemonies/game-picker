@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="Daniil Dyachenko">
+
+        <createTable tableName="games">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="title" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="description" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="steam_app_id" type="bigint"/>
+
+            <column name="release_date" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="publisher_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="developer_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--    Tag    -->
+
+        <createTable tableName="tags">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="games_tags">
+            <column name="game_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="games_tags_game_id_fk"
+                             referencedTableName="games"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+
+            <column name="tag_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="games_tags_tag_id_fk"
+                             referencedTableName="tags"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey clustered="true"
+                       columnNames="game_id, tag_id"
+                       constraintName="pk_games_tags"
+                       tableName="games_tags"
+                       validate="true"/>
+
+        <!--    Tag    -->
+        <!--    Ganre    -->
+
+        <createTable tableName="genres">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="games_genres">
+            <column name="game_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="games_genres_game_id_fk"
+                             referencedTableName="games"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+
+            <column name="genre_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="games_genres_genre_id_fk"
+                             referencedTableName="genres"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey clustered="true"
+                       columnNames="game_id, genre_id"
+                       constraintName="pk_games_genres"
+                       tableName="games_genres"
+                       validate="true"/>
+
+        <!--    Ganre    -->
+        <!--    Platform    -->
+
+        <createTable tableName="platforms">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="games_platforms">
+            <column name="game_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="games_platforms_game_id_fk"
+                             referencedTableName="games"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+
+            <column name="platform_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="games_platforms_platform_id_fk"
+                             referencedTableName="platforms"
+                             referencedColumnNames="id"
+                             deleteCascade="true"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey clustered="true"
+                       columnNames="game_id, platform_id"
+                       constraintName="pk_games_platforms"
+                       tableName="games_platforms"
+                       validate="true"/>
+
+        <!--    Platform    -->
+        <!--    Price    -->
+
+        <createTable tableName="prices">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="market_name" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="price" type="double">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="game_id" type="bigint">
+                <constraints
+                        deleteCascade="true"
+                        foreignKeyName="prices_game_id_fk"
+                        referencedTableName="games"
+                        referencedColumnNames="id"
+                        nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--    Price    -->
+        <!--    Developer    -->
+
+        <createTable tableName="developers">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--    Developer    -->
+        <!--    Publisher    -->
+
+        <createTable tableName="publishers">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--    Publisher    -->
+
+        <!--    Media Links    -->
+
+        <createTable tableName="media_links">
+
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="media_link" type="text"/>
+
+            <column name="game_id" type="bigint">
+                <constraints
+                        deleteCascade="true"
+                        foreignKeyName="prices_game_id_fk"
+                        referencedTableName="games"
+                        referencedColumnNames="id"
+                        nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--    Media Links    -->
+
+    </changeSet>
+
+</databaseChangeLog>

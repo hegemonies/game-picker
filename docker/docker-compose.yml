@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -Ubravo -d bravo_news" ]
+      interval: 10s
+      timeout: 5s
+      retries: 100
+    mem_limit: 1024m
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - TZ=${TIMEZONE}
+      - PGTZ=${TIMEZONE}
+    networks:
+      - gamepickernet
+    command: # файл конфигурации нельзя расположить по стандартному пути, т.к. entrypoint его перезапишет при старте
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+
+  backend:
+    image: pi41:5000/game-picker/backend:latest
+    restart: always
+    environment:
+      - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8 -Xmx1536M
+      - TZ=${TIMEZONE}
+      - GAME-SCRAPPER_INTERVAL=1h
+      - MEDIA-DOWNLOADER_INTERVAL=1h
+      - MEDIA-DOWNLOADER_ENABLE=true
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - LOGGING_LEVEL_RU_TWOSHOES=DEBUG
+      - MINIO_URL=http://pi41:9002
+    mem_limit: 2048m
+    ports:
+      - 8080:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - gamepickernet
+
+networks:
+  gamepickernet:
+
+volumes:
+  postgres:
